@@ -1,18 +1,10 @@
-# Use Node.js base image
-FROM node:16-alpine
-
-# Set the working directory
-WORKDIR /app
-
-# Copy package.json and install dependencies
-COPY package.json .
-RUN npm install
-
-# Copy the rest of the application code
+FROM node:lts-alpine
+ENV NODE_ENV=production
+WORKDIR /usr/src/app
+COPY ["package.json", "package-lock.json*", "npm-shrinkwrap.json*", "./"]
+RUN npm install --production --silent && mv node_modules ../
 COPY . .
-
-# Expose the port that your app will run on
 EXPOSE 3000
-
-# Start the application
-CMD ["node", "whatsapp.js"]
+RUN chown -R node /usr/src/app
+USER node
+CMD ["node", "./index.js"]
